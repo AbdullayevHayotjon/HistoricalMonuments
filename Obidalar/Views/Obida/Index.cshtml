@@ -1,0 +1,76 @@
+﻿@model IEnumerable<Obidalar.Models.Obida>
+
+<div class="container py-4">
+    <h1 class="mb-4 text-center fw-bold">O‘zbekistonning tarixiy obidalari</h1>
+
+    <!-- Qidiruv formasi -->
+    <style>
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+            .search-wrapper input {
+                padding-right: 3rem; /* 🔍 uchun joy */
+            }
+
+            .search-wrapper .search-icon {
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                transform: translateY(-50%);
+                color: #8b4513;
+                font-size: 1.3rem;
+                pointer-events: none; /* Klik bo‘lmaydi */
+            }
+    </style>
+
+    <form id="searchForm" method="get" asp-action="Index" class="mb-5">
+        <div class="search-wrapper input-group-lg shadow-sm">
+            <input id="searchInput" type="text" name="search" class="form-control rounded"
+                   placeholder="Obida nomi bo‘yicha qidiring..."
+                   value="@Context.Request.Query["search"]" />
+            <span class="search-icon">🔍</span>
+        </div>
+    </form>
+
+    <script>
+        const input = document.getElementById('searchInput');
+        const form = document.getElementById('searchForm');
+        let timeout = null;
+
+        input.addEventListener('input', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                form.submit();
+            }, 500);
+        });
+    </script>
+
+    <!-- Obidalar -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var obida in Model)
+        {
+            <div class="col">
+                <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
+                    <div class="card card-obida h-100 shadow-sm" style="cursor: pointer;">
+                        <img src="@obida.RasmUrl" alt="@obida.Nomi" class="card-img-top" style="height: 220px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@obida.Nomi</h5>
+                            <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Admin uchun obida qo‘shish -->
+    @if (Context.Session.GetString("IsAdmin") == "true")
+    {
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Create")" class="btn btn-success btn-lg shadow">+ Yangi obida qo‘shish</a>
+        </div>
+    }
+</div>

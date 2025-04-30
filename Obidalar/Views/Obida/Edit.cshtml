@@ -1,0 +1,47 @@
+﻿@model Obida
+
+<h2 class="text-center mb-4">Obidani Tahrirlash</h2>
+
+<div class="container d-flex justify-content-center">
+    <div class="col-md-8">
+        <form asp-action="Edit" enctype="multipart/form-data" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label class="form-label">Nomi</label>
+                <input asp-for="Nomi" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Viloyat</label>
+                <input asp-for="Viloyat" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Yil</label>
+                <input asp-for="Yil" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tavsif</label>
+                <textarea asp-for="Tavsif" class="form-control" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Rasm</label>
+                <input type="file" name="Rasm" class="form-control" required />
+            </div>
+
+            <!-- Tugmalarni chap tarafda joylashtirish -->
+            <div class="d-flex justify-content-end gap-2">
+                <!-- Saqlash tugmasi -->
+                <button type="submit" class="btn btn-success">Saqlash</button>
+            </div>
+
+            <!-- Orqaga qaytish tugmasi pastda joylashadi -->
+            <div class="d-flex justify-content-end mt-3">
+                <a href="@Url.Action("Details", "Obida", new { id = Model.Id })" class="btn btn-secondary">⬅️ Orqaga</a>
+            </div>
+        </form>
+    </div>
+</div>

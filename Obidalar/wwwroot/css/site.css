@@ -1,0 +1,94 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #ffffff; /* Och jigarrang */
+}
+
+h1, h2, h3 {
+    font-weight: 600;
+    color: #333;
+}
+
+.card-obida {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+}
+
+    .card-obida:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-obida img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #ddd;
+    }
+
+.card-body h5 {
+    font-size: 1.2rem;
+    color: #222;
+}
+
+.card-body p {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.footer {
+    background-color: #f0f0f0;
+    padding: 1rem 0;
+}
+
+.logo-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logo-icon {
+    color: #8B4513; /* Jigar rang */
+    font-size: 1.8rem;
+    transition: transform 0.2s;
+}
+
+.logo-title {
+    color: #000;
+    font-family: 'Georgia', serif;
+    letter-spacing: 0.5px;
+}
+
+/* Sign In button */
+.btn-custom-login {
+    background-color: #007BFF; /* Bootstrap ko‘k */
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-custom-login:hover {
+        background-color: #3399ff;
+        color: #fff;
+    }
+
+/* Logout button */
+.btn-custom-logout {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-custom-logout:hover {
+        background-color: #e55363;
+        color: #fff;
+    }
+
+
+
