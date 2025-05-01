@@ -12,8 +12,8 @@ using Obidalar.Data;
 namespace Obidalar.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250430113209_second")]
-    partial class second
+    [Migration("20250501045732_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,7 @@ namespace Obidalar.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RasmUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Tavsif")
@@ -45,6 +46,10 @@ namespace Obidalar.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Viloyat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("XaritaUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -84,12 +89,17 @@ namespace Obidalar.Migrations
             modelBuilder.Entity("Obidalar.Models.Sharh", b =>
                 {
                     b.HasOne("Obidalar.Models.Obida", "Obida")
-                        .WithMany()
+                        .WithMany("Sharhlar")
                         .HasForeignKey("ObidaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Obida");
+                });
+
+            modelBuilder.Entity("Obidalar.Models.Obida", b =>
+                {
+                    b.Navigation("Sharhlar");
                 });
 #pragma warning restore 612, 618
         }

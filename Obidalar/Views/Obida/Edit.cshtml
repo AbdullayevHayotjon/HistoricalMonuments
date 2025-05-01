@@ -18,6 +18,14 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Xarita manzili (Google Map URL)</label>
+                <small>
+                    <a href="https://maps.google.com" target="_blank">Xaritada ko‘rish</a>
+                </small>
+                <input asp-for="XaritaUrl" class="form-control" placeholder="https://maps.google.com/..." required />
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Yil</label>
                 <input asp-for="Yil" class="form-control" required />
             </div>
@@ -29,7 +37,16 @@
 
             <div class="mb-3">
                 <label class="form-label">Rasm</label>
-                <input type="file" name="Rasm" class="form-control" required />
+                <input type="file" name="Rasm" class="form-control" />
+
+                @* Agar rasm bo‘lsa, uni ko‘rsatamiz *@
+                @if (!string.IsNullOrEmpty(Model.RasmUrl))
+                {
+                    <div class="mt-2">
+                        <label>Hozirgi rasm:</label><br />
+                        <img src="@Model.RasmUrl" alt="Rasm" class="img-thumbnail" style="max-height: 200px;" />
+                    </div>
+                }
             </div>
 
             <!-- Tugmalarni chap tarafda joylashtirish -->

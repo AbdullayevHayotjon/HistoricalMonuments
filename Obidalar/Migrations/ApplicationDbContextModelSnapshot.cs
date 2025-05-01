@@ -35,6 +35,7 @@ namespace Obidalar.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RasmUrl")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Tavsif")
@@ -42,6 +43,10 @@ namespace Obidalar.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Viloyat")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("XaritaUrl")
                         .IsRequired()
                         .HasColumnType("text");
 

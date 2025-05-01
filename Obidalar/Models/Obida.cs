@@ -16,8 +16,11 @@ namespace Obidalar.Models
 
         [Required]
         public string Tavsif { get; set; }
+        [Required]
+        public string RasmUrl { get; set; }
+        [Required]
+        public string XaritaUrl { get; set; }
 
-        public string? RasmUrl { get; set; }
         public List<Sharh> Sharhlar { get; set; } = new();
     }
 

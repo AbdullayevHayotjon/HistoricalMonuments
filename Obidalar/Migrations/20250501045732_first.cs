@@ -7,11 +7,29 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Obidalar.Migrations
 {
     /// <inheritdoc />
-    public partial class second : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Obidalar",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nomi = table.Column<string>(type: "text", nullable: false),
+                    Viloyat = table.Column<string>(type: "text", nullable: false),
+                    Yil = table.Column<int>(type: "integer", nullable: false),
+                    Tavsif = table.Column<string>(type: "text", nullable: false),
+                    RasmUrl = table.Column<string>(type: "text", nullable: false),
+                    XaritaUrl = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Obidalar", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Sharhlar",
                 columns: table => new
@@ -44,6 +62,9 @@ namespace Obidalar.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Sharhlar");
+
+            migrationBuilder.DropTable(
+                name: "Obidalar");
         }
     }
 }

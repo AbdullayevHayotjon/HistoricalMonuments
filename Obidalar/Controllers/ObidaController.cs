@@ -50,11 +50,20 @@ namespace Obidalar.Controllers
         }
 
 
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return RedirectToAction("Index", "Login");
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(Obida obida, IFormFile Rasm)
         {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return RedirectToAction("Index", "Login");
+
             if (Rasm != null)
             {
                 var fileName = Path.GetFileName(Rasm.FileName);
@@ -70,19 +79,24 @@ namespace Obidalar.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        // Tahrirlash sahifasini ko‘rsatish
+
         public async Task<IActionResult> Edit(int id)
         {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return RedirectToAction("Index", "Login");
+
             var obida = await _context.Obidalar.FindAsync(id);
             if (obida == null) return NotFound();
             return View(obida);
         }
 
-        // Tahrirlash ma'lumotini qabul qilish
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Obida obida, IFormFile? Rasm)
         {
             if (id != obida.Id) return NotFound();
+
+            var existingObida = await _context.Obidalar.AsNoTracking().FirstOrDefaultAsync(o => o.Id == id);
+            if (existingObida == null) return NotFound();
 
             if (Rasm != null)
             {
@@ -94,24 +108,32 @@ namespace Obidalar.Controllers
                 }
                 obida.RasmUrl = "/rasmlar/" + fileName;
             }
+            else
+            {
+                obida.RasmUrl = existingObida.RasmUrl; // eski rasmni saqlab qolamiz
+            }
 
             _context.Update(obida);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // O'chirish sahifasini ko'rsatish
         public async Task<IActionResult> Delete(int id)
         {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return RedirectToAction("Index", "Login");
+
             var obida = await _context.Obidalar.FindAsync(id);
             if (obida == null) return NotFound();
             return View(obida);
         }
 
-        // O'chirishni tasdiqlash
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (HttpContext.Session.GetString("IsAdmin") != "true")
+                return RedirectToAction("Index", "Login");
+
             var obida = await _context.Obidalar.FindAsync(id);
             if (obida == null) return NotFound();
 

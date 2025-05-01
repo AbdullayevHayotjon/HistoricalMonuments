@@ -9,7 +9,10 @@
         <div class="col-12">
             <img src="@Model.RasmUrl" class="img-fluid rounded mb-3 mx-auto d-block" alt="@Model.Nomi" />
             <h2 class="text-center">@Model.Nomi</h2>
-            <p><strong>Joylashuv:</strong> @Model.Viloyat</p>
+            <div class="d-flex align-items-center mb-2">
+                <p class="mb-0"><strong>Joylashuv:</strong> @Model.Viloyat</p>
+                <a href="@Model.XaritaUrl" target="_blank" class="btn btn-sm btn-outline-primary ms-2">🗺 Xaritada ko‘rish</a>
+            </div>
             <p><strong>Yil:</strong> @Model.Yil</p>
             <p>@Model.Tavsif</p>
 

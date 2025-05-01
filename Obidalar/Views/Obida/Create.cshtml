@@ -14,6 +14,13 @@
                 <input asp-for="Viloyat" class="form-control" required />
             </div>
             <div class="mb-3">
+                <label class="form-label">Xarita manzili (Google Map URL)</label>
+                <small>
+                    <a href="https://maps.google.com" target="_blank">Xaritada ko‘rish</a>
+                </small>
+                <input asp-for="XaritaUrl" class="form-control" placeholder="https://maps.google.com/..." required/>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Yil</label>
                 <input asp-for="Yil" class="form-control" required />
             </div>
@@ -25,11 +32,11 @@
                 <label class="form-label">Rasm</label>
                 <input type="file" name="Rasm" class="form-control" required />
             </div>
+            
             <div class="d-flex justify-content-end gap-2">
                 <button type="submit" class="btn btn-success">Qo‘shish</button>
             </div>
         </form>
-
         <div class="d-flex justify-content-end mt-3">
             <a href="@Url.Action("Index", "Obida")" class="btn btn-secondary">⬅️ Orqaga</a>
         </div>
