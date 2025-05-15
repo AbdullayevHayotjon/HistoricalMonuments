@@ -1,11 +1,36 @@
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #ffffff; /* Och jigarrang */
+﻿body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff;
+    color: #333; /* Matn rangi quyuq kulrang - ko‘zni kamroq charchatadi */
 }
+
 
 h1, h2, h3 {
     font-weight: 600;
     color: #333;
+}
+/* Scrollbarni yashirish (barcha brauzerlar uchun moslashgan) */
+.scroll-container {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+}
+
+    .scroll-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+#topRated {
+    scroll-margin-top: 90px;
+}
+#home {
+    scroll-margin-top: 70px;
+}
+#about {
+    scroll-margin-top: 90px;
+}
+#newObida {
+    scroll-margin-top: 25px;
 }
 
 .card-obida {
@@ -38,6 +63,7 @@ h1, h2, h3 {
     color: #555;
 }
 
+
 .footer {
     background-color: #f0f0f0;
     padding: 1rem 0;
@@ -66,7 +92,7 @@ h1, h2, h3 {
 
 /* Sign In button */
 .btn-custom-login {
-    background-color: #007BFF; /* Bootstrap ko�k */
+    background-color: #007BFF; /* Bootstrap ko‘k */
     color: #fff;
     border: none;
     transition: background-color 0.3s ease;
@@ -89,6 +115,201 @@ h1, h2, h3 {
         background-color: #e55363;
         color: #fff;
     }
+
+
+.nav-link {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .nav-link:hover {
+        transform: scale(1.08); /* Salgina kattalashadi */
+    }
+
+
+.profile-img {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .profile-img:hover {
+        transform: scale(1.1);
+    }
+
+.brand-logo {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .brand-logo:hover {
+        transform: scale(1.1);
+    }
+
+.dropdown-item {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .dropdown-item:hover {
+        transform: scale(1.1);
+    }
+
+.social-icon {
+    transition: transform 0.2s ease-in-out;
+}
+
+    .social-icon:hover {
+        transform: scale(1.1);
+    }
+
+.search-wrapper {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+    .search-wrapper input {
+        padding-right: 3rem; /* 🔍 uchun joy */
+    }
+
+    .search-wrapper .search-icon {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        color: #8b4513;
+        font-size: 1.3rem;
+        pointer-events: none; /* Klik bo‘lmaydi */
+    }
+
+html {
+    scroll-behavior: smooth;
+}
+
+.custom-heading {
+    text-align: left; /* Chap tarafga joylashtirish */
+    font-size: 1.5rem; /* Kichikroq qilish */
+    margin-top: 20px; /* Yozuvga qo‘shimcha bo‘shliq */
+}
+
+.hero-section {
+    position: relative;
+    background-image: url('/rasmlar/fon.png'); /* Rasm manzili */
+    background-size: cover; /* Rasmni butun bo‘limga kengaytirish */
+    background-position: center; /* Rasmni markazga joylash */
+    height: 400px; /* Sektsiya balandligi */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Matn rangini oq qilib o‘rnatish */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Matnni o‘qish oson qilish uchun soya */
+}
+
+.search-wrapper {
+    background: rgba(0, 0, 0, 0.5); /* Qidiruv formasi uchun yarim shaffof fon */
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.search-icon {
+    font-size: 1.5rem;
+    color: white;
+    padding-left: 10px;
+}
+
+/* Agar o‘lchamlar kichik bo‘lsa, matn va forma joylashuvini optimallashtirish */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 300px;
+    }
+
+    .search-wrapper {
+        width: 80%;
+    }
+}
+
+/* Overlay - rasm ustiga qorong'ulik qo'shish */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Qorong'ulik qo'shish */
+    z-index: 1;
+}
+
+/* Matnni va formani yuqoriga joylash */
+.hero-section .container {
+    z-index: 2; /* Bu matn va formani rasmning ustiga chiqaradi */
+}
+.like-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.7); /* Shaffof oq */
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.3s;
+}
+
+    .like-btn i {
+        color: #aaa; /* Oddiy holatda kulrang */
+        font-size: 18px;
+        transition: color 0.3s;
+    }
+    /* Hover holati */
+    .like-btn:hover {
+        background-color: rgba(255, 255, 255, 1); /* To'liq oq holat */
+        transform: scale(1.1); /* Hoverda biroz kattalashishi */
+    }
+
+    .like-btn.liked i {
+        color: #e60023; /* Bosilganda qizil yurak */
+    }
+.view-count {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #555;
+}
+
+    .view-count i {     
+        margin-right: 5px; /* Ko'zcha belgisi va son o'rtasida bo'shliq */
+    }
+
+.rating {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #666; /* Yumshoq kulrang */
+    background-color: rgba(255, 255, 255, 0.8); /* Orqa fon – ko‘rinishi uchun */
+    padding: 4px 8px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+    .rating i {
+        color: #FFD700; /* Yulduzcha – oltin rang */
+        margin-right: 4px;
+    }
+
+
+
+
+
 
 
 

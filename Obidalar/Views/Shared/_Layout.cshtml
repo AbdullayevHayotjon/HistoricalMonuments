@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var path = Context.Request.Path.ToString().ToLower();
+    bool isAuthPage = path.Contains("/login/register") || path.Contains("/login/login") || path.Contains("/obida/create");
+}
+<!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="utf-8" />
@@ -7,6 +11,11 @@
 
     <!-- Faqat bitta Bootstrap qo‘shamiz -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 
     <!-- O‘z css -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -18,6 +27,7 @@
             flex-direction: column;
             height: 100vh; /* Ekran balandligini to'liq qamrab olish */
             margin: 0;
+            padding-top: 70px; /* Navbar balandligiga mos ravishda joy qoldiramiz */
         }
 
         .container {
@@ -33,52 +43,201 @@
         header {
             background-color: #ffffff;
         }
+
+        .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+
+        .logo-text {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .btn-custom-login, .btn-custom-logout {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .dropdown-toggle::after {
+            content: none !important; /* Iconni yashirish */
+        }
+
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-light border-bottom shadow-sm mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand logo-text" href="#">
-                    <span class="logo-icon">🏛</span>
-                    <span class="logo-title">Obidalar</span>
-                </a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse justify-content-end" id="mainNav">
-                    @if (Context.Session.GetString("IsAdmin") == "true")
-                    {
-                        <a class="btn btn-custom-logout me-2" href="@Url.Action("Logout", "Login")">🚪 Logout</a>
+    @if (!isAuthPage)
+    {
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-light bg-light border-bottom shadow-sm fixed-top">
+                <div class="container-fluid">
+                    @{
+                        var homeUrl = Context.Session.GetString("UserRole") == "Admin"
+                        ? Url.Action("Index", "Admin")
+                        : Url.Action("Index", "Obida");
                     }
-                    else
-                    {
-                        <a class="btn btn-custom-login me-2" href="@Url.Action("Index", "Login")">
-                            🔐 Sign In
-                        </a>
-                    }
+                    <a class="navbar-brand" href="@homeUrl">
+                        <img src="~/rasmlar/logotip.png" alt="Obidalar.uz" height="50" class="brand-logo" />
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse justify-content-start" id="mainNav">
+                        <ul class="navbar-nav">
+                            @if (Context.Session.GetString("UserRole") == "Admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="@Url.Action("Index", "Admin")">🏛 Obidalar</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#home">🏠 Bosh sahifa</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#about">ℹ️ Biz haqimizda</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="@Url.Action("Index", "Obidalar")">🏛 Barcha obidalar</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#newObida">🆕 Yangi obidalar</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#topRated">⭐ Eng ommabop obidalar</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#footer">📞 Bog‘lanish</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="collapse navbar-collapse justify-content-end" id="userNav">
+                        @{
+                            var userRole = Context.Session.GetString("UserRole");
+                            var userName = Context.Session.GetString("UserName");
+                        }
+                        @if (!string.IsNullOrEmpty(userRole))
+                        {
+                            <span class="me-2 mt-1 fw-semibold">@userName</span>
+                        }
+
+                        <!-- Oddiy foydalanuvchi (User) uchun menyu -->
+                        <div class="dropdown">
+                            <button class="btn rounded-circle border-0 dropdown-toggle"
+                                    type="button"
+                                    id="dropdownMenuButton"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style="width: 42px; height: 42px; padding: 0; overflow: hidden;">
+                                <img src="~/rasmlar/profil_logo.png" alt="Profil" class="profile-img" style="width: 100%; height: 100%; object-fit: cover;">
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                @if (userRole == "User")
+                                {
+                                    <li><a class="dropdown-item" href="@Url.Action("Yurakchalar", "User")">❤️ Mening obidalarim</a></li>
+                                }
+                                @if (userRole == "User" || userRole == "Admin")
+                                {
+                                    <li><a class="dropdown-item" href="@Url.Action("Settings", "User")">⚙️ Sozlamalar</a></li>
+                                    <li><a class="dropdown-item text-danger" href="@Url.Action("Logout", "Login")">🚪 Chiqish</a></li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" href="@Url.Action("Login", "Login")">🔐 Kirish</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Register", "Login")">📝 Ro'yxatdan o'tish</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
 
+        </header>
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
+    @if (!isAuthPage)
+    {
+        <footer id="footer" class="py-4 mt-5 border-top shadow-sm" style="background-color: #5C3A21; color: white;">
+            <div class="container text-center">
+                <p class="mb-3">&copy; 2025 - <strong>Obidalar.uz</strong> loyihasi</p>
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container text-center">
-            &copy; 2025 - Obidalar loyihasi
-        </div>
-    </footer>
+                <div class="d-flex justify-content-center align-items-center gap-3 mb-2">
+                    <a href="https://t.me/abdu11aev_h" target="_blank">
+                        <img src="~/rasmlar/telegram-logo.png" alt="Telegram" class="social-icon" style="width: 30px; height: 30px;">
+                    </a>
+                    <a href="https://instagram.com/abdu11aev_h" target="_blank">
+                        <img src="~/rasmlar/instagram_logo.png" alt="Instagram" class="social-icon" style="width: 30px; height: 30px;">
+                    </a>
+                </div>
+                <p class="mb-1" style="font-size: 16px;">
+                    📞 +998 93 781 30 03
+                </p>
+            </div>
+        </footer>
+    }
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        let isClicked = false;  // Yurakchani birinchi marta bosganimizni aniqlash
+
+        function toggleLike(event, button) {
+            event.preventDefault();  // Bu yerda event default harakatini to‘xtatamiz
+
+            if (isClicked) {
+                // Agar oldin bosilgan bo'lsa, yurakni qizartirish
+                button.classList.toggle("liked");
+            } else {
+                // Birinchi marta bosilganida faqat qizarmasligi
+                isClicked = true;
+            }
+        }
+    </script>
+
+    <!-- 🔐 Kirish Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="/Login/Login">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLabel">Kirish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Yopish"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" name="Email" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Parol:</label>
+                            <div class="input-group">
+                                <input type="password" name="Password" id="loginPassword" class="form-control" required />
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('loginPassword', 'toggleIcon_loginPassword')">
+                                    <i class="fa-solid fa-eye-slash" id="toggleIcon_loginPassword"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">🔐 Kirish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

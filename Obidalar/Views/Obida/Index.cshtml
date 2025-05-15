@@ -1,70 +1,133 @@
 ﻿@model IEnumerable<Obidalar.Models.Obida>
 
-<div class="container py-4">
-    <h1 class="mb-4 text-center fw-bold">O‘zbekistonning tarixiy obidalari</h1>
+<div class="container py-4" id="home">
+    <br />
+    <!-- O‘zbekistonning tarixiy obidalari bosh sahifa -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="mb-4 text-center fw-bold text-white">O‘zbekistonning tarixiy obidalarini kashf eting</h1>
 
-    <!-- Qidiruv formasi -->
-    <style>
-        .search-wrapper {
-            position: relative;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+            <!-- Qidiruv formasi -->
+            <form method="get" asp-action="Index" class="mb-5">
+                <div class="input-group shadow-sm mx-auto" style="max-width: 700px;">
+                    <!-- Select qismini kichik qilish uchun max-width qo‘yamiz -->
+                    <select class="form-select" name="filterBy" style="max-width: 225px;">
+                        <option value="nom">Nomi bo‘yicha</option>
+                        <option value="joylashuv">Joylashuvi bo‘yicha</option>
+                    </select>
 
-            .search-wrapper input {
-                padding-right: 3rem; /* 🔍 uchun joy */
-            }
+                    <!-- Qidiruv inputi (keng qoladi) -->
+                    <input type="text" class="form-control" name="search" placeholder="Qidiruv..." />
 
-            .search-wrapper .search-icon {
-                position: absolute;
-                top: 50%;
-                right: 1rem;
-                transform: translateY(-50%);
-                color: #8b4513;
-                font-size: 1.3rem;
-                pointer-events: none; /* Klik bo‘lmaydi */
-            }
-    </style>
-
-    <form id="searchForm" method="get" asp-action="Index" class="mb-5">
-        <div class="search-wrapper input-group-lg shadow-sm">
-            <input id="searchInput" type="text" name="search" class="form-control rounded"
-                   placeholder="Obida nomi bo‘yicha qidiring..."
-                   value="@Context.Request.Query["search"]" />
-            <span class="search-icon">🔍</span>
+                    <!-- Qidirish tugmasi -->
+                    <button type="submit" class="btn btn-primary px-4">🔍</button>
+                </div>
+            </form>
         </div>
-    </form>
-
-    <script>
-        const input = document.getElementById('searchInput');
-        const form = document.getElementById('searchForm');
-        let timeout = null;
-
-        input.addEventListener('input', function () {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                form.submit();
-            }, 500);
-        });
-    </script>
-
-    <!-- Obidalar -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var obida in Model)
-        {
-            <div class="col">
-                <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
-                    <div class="card card-obida h-100 shadow-sm" style="cursor: pointer;">
-                        <img src="@obida.RasmUrl" alt="@obida.Nomi" class="card-img-top" style="height: 220px; object-fit: cover;" />
-                        <div class="card-body">
-                            <h5 class="card-title">@obida.Nomi</h5>
-                            <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        }
     </div>
+
+
+    <!-- Yangi obidalar -->
+    <div class="mb-5" id="newObida">
+        <br />
+        <br />
+        <h2 class="custom-heading">Yangi obidalar</h2>
+
+        <!-- Gorizontal scroll container -->
+        <div class="scroll-container d-flex gap-3 overflow-auto py-3">
+            @foreach (var obida in Model.OrderByDescending(o => o.Yil).Take(10))
+            {
+                <div class="flex-shrink-0" style="width: 300px; position: relative;">
+                    <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
+                        <div class="card card-obida h-100 shadow-sm" style="cursor: pointer; position: relative;">
+                            <!-- Yurakcha belgisi -->
+                            <button class="like-btn" onclick="toggleLike(event, this)">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <!-- Ko'zcha belgisi va ViewCount -->
+                            <div class="view-count" style="position: absolute; bottom: 10px; right: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #555;">
+                                <i class="fas fa-eye" style="margin-right: 5px;"></i>
+                                <span class="view-count-number" style="font-size: 14px;">13</span>
+                            </div>
+                            <!-- Reyting (bitta yulduzcha va o'rtacha baho) -->
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>4.95</span>
+                            </div>
+                            <img src="~/rasmlar/IchanQala.png" alt="@obida.Nomi" class="card-img-top" />
+                            <div class="card-body">
+                                <h5 class="card-title">@obida.Nomi</h5>
+                                <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <!-- Eng ommabop obidalar -->
+    <div class="mb-5" id="topRated">
+        <h2 class="custom-heading">Eng ommabop obidalar</h2>
+        <div class="scroll-container d-flex gap-3 overflow-auto py-3">
+            @foreach (var obida in Model.Take(5))
+            {
+                <div class="flex-shrink-0" style="width: 300px; position: relative;">
+                    <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
+                        <div class="card card-obida h-100 shadow-sm" style="cursor: pointer; position: relative;">
+                            <!-- Yurakcha belgisi -->
+                            <button class="like-btn" onclick="toggleLike(event, this)">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <!-- Ko'zcha belgisi va ViewCount -->
+                            <div class="view-count" style="position: absolute; bottom: 10px; right: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #555;">
+                                <i class="fas fa-eye" style="margin-right: 5px;"></i>
+                                <span class="view-count-number" style="font-size: 14px;">24</span>
+                            </div>
+                            <img src="~/rasmlar/Labihovuz.png" alt="@obida.Nomi" class="card-img-top" />
+                            <div class="card-body">
+                                <h5 class="card-title">@obida.Nomi</h5>
+                                <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Biz haqimizda -->
+   
+    <div class="container mb-5" id="about">
+        <h2 class="custom-heading mb-5 text-start">Biz haqimizda</h2>
+
+        <!-- Birinchi qism: Chapda matn, o'ngda rasm -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    Bu sayt orqali siz O‘zbekistonning tarixiy obidalari haqida batafsil ma’lumotlarga ega bo‘lasiz. Sayt foydalanuvchilarga o‘tmishimizga oid qadimiy yodgorliklar haqida bilib olish imkoniyatini beradi.
+                </p>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="/rasmlar/Registon.png" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Ikkinchi qism: Chapda rasm, o'ngda matn -->
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <img src="/rasmlar/BahouddinNaqshband.jpg" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
+            </div>
+            <div class="col-md-6">
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    Saytimiz orqali siz nafaqat mashhur obidalarni, balki kamroq tanilgan, lekin tarixiy ahamiyatga ega maskanlarni ham o‘rganishingiz mumkin. Har bir obida o‘ziga xos tarixiy voqealarni aks ettiradi.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- Admin uchun obida qo‘shish -->
     @if (Context.Session.GetString("IsAdmin") == "true")

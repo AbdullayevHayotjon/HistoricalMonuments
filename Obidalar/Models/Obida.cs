@@ -4,6 +4,7 @@ namespace Obidalar.Models
 {
     public class Obida
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -16,12 +17,20 @@ namespace Obidalar.Models
 
         [Required]
         public string Tavsif { get; set; }
-        [Required]
-        public string RasmUrl { get; set; }
+
         [Required]
         public string XaritaUrl { get; set; }
 
-        public List<Sharh> Sharhlar { get; set; } = new();
-    }
+        public int ViewCount { get; set; } = 0;
 
+        public double Rating { get; set; } = 0;
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public List<Sharh> Sharhlar { get; set; } = new();
+
+        public List<User> LikedUsers { get; set; } = new();
+
+        public List<ObidaMedia> Medialar { get; set; } = new();
+    }
 }

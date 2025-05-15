@@ -22,6 +22,21 @@ namespace Obidalar.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ObidaUser", b =>
+                {
+                    b.Property<int>("LikedObidalarId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LikedUsersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LikedObidalarId", "LikedUsersId");
+
+                    b.HasIndex("LikedUsersId");
+
+                    b.ToTable("ObidaUser");
+                });
+
             modelBuilder.Entity("Obidalar.Models.Obida", b =>
                 {
                     b.Property<int>("Id")
@@ -30,17 +45,22 @@ namespace Obidalar.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Nomi")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RasmUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Tavsif")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Viloyat")
                         .IsRequired()
@@ -56,6 +76,31 @@ namespace Obidalar.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Obidalar");
+                });
+
+            modelBuilder.Entity("Obidalar.Models.ObidaMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ObidaId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ObidaId");
+
+                    b.ToTable("ObidaMedialar");
                 });
 
             modelBuilder.Entity("Obidalar.Models.Sharh", b =>
@@ -76,11 +121,70 @@ namespace Obidalar.Migrations
                     b.Property<DateTime>("Sana")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ObidaId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Sharhlar");
+                });
+
+            modelBuilder.Entity("Obidalar.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Ism")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Parol")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Userlar");
+                });
+
+            modelBuilder.Entity("ObidaUser", b =>
+                {
+                    b.HasOne("Obidalar.Models.Obida", null)
+                        .WithMany()
+                        .HasForeignKey("LikedObidalarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Obidalar.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("LikedUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Obidalar.Models.ObidaMedia", b =>
+                {
+                    b.HasOne("Obidalar.Models.Obida", "Obida")
+                        .WithMany("Medialar")
+                        .HasForeignKey("ObidaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Obida");
                 });
 
             modelBuilder.Entity("Obidalar.Models.Sharh", b =>
@@ -91,10 +195,25 @@ namespace Obidalar.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Obidalar.Models.User", "User")
+                        .WithMany("Sharhlar")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Obida");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Obidalar.Models.Obida", b =>
+                {
+                    b.Navigation("Medialar");
+
+                    b.Navigation("Sharhlar");
+                });
+
+            modelBuilder.Entity("Obidalar.Models.User", b =>
                 {
                     b.Navigation("Sharhlar");
                 });

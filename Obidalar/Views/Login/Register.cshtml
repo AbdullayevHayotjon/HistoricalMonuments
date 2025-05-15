@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Ro'yxatdan o'tish";
+}
+
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">Ro'yxatdan o'tish</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form method="post" action="/Login/Register">
+        <div class="mb-3">
+            <label for="name" class="form-label">Ism:</label>
+            <input type="text" name="Ism" class="form-control" required value="@ViewBag.Ism" />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" name="Email" class="form-control" required value="@ViewBag.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label for="registerPassword" class="form-label">Parol:</label>
+            <div class="input-group">
+                <input type="password" name="Password" id="registerPassword" class="form-control" required />
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('registerPassword', 'toggleIcon_registerPassword')">
+                    <i class="fa-solid fa-eye-slash" id="toggleIcon_registerPassword"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">📝 Ro'yxatdan o'tish</button>
+
+        <div class="d-flex justify-content-end mt-2">
+            <a href="/" class="btn btn-outline-secondary">🔙 Orqaga</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+}

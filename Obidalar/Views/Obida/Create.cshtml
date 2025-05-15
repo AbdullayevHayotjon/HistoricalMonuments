@@ -1,44 +1,46 @@
-﻿@model Obida
+﻿@model Obidalar.Models.ObidaCreateViewModel
 
-<h2 class="text-center mb-4">Yangi Obida Qo‘shish</h2>
+@{
+    ViewData["Title"] = "Obida Qo'shish";
+}
 
-<div class="container d-flex justify-content-center">
-    <div class="col-md-8">
-        <form asp-action="Create" enctype="multipart/form-data" method="post">
-            <div class="mb-3">
-                <label class="form-label">Nomi</label>
-                <input asp-for="Nomi" class="form-control" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Viloyat</label>
-                <input asp-for="Viloyat" class="form-control" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Xarita manzili (Google Map URL)</label>
-                <small>
-                    <a href="https://maps.google.com" target="_blank">Xaritada ko‘rish</a>
-                </small>
-                <input asp-for="XaritaUrl" class="form-control" placeholder="https://maps.google.com/..." required/>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Yil</label>
-                <input asp-for="Yil" class="form-control" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Tavsif</label>
-                <textarea asp-for="Tavsif" class="form-control" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Rasm</label>
-                <input type="file" name="Rasm" class="form-control" required />
-            </div>
-            
-            <div class="d-flex justify-content-end gap-2">
-                <button type="submit" class="btn btn-success">Qo‘shish</button>
-            </div>
-        </form>
-        <div class="d-flex justify-content-end mt-3">
-            <a href="@Url.Action("Index", "Obida")" class="btn btn-secondary">⬅️ Orqaga</a>
-        </div>
+<h2 class="text-center mb-4">Obida Qo'shish</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group mb-3">
+        <label for="Nomi">Obida nomi</label>
+        <input type="text" class="form-control" id="Nomi" name="Nomi" required />
     </div>
-</div>
+
+    <div class="form-group mb-3">
+        <label for="Viloyat">Viloyat</label>
+        <input type="text" class="form-control" id="Viloyat" name="Viloyat" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="YaratilganYil">Yaratilgan yil</label>
+        <input type="number" class="form-control" id="YaratilganYil" name="YaratilganYil" required />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="Tavsif">Tavsif</label>
+        <textarea class="form-control" id="Tavsif" name="Tavsif" required></textarea>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="XaritaUrl">Xarita URL</label>
+        <input type="text" class="form-control" id="XaritaUrl" name="XaritaUrl" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="Medialar">Media Fayllar (rasmlar yoki videolar)</label>
+        <input type="file" class="form-control" id="Medialar" name="Medialar" multiple />
+    </div>
+
+
+    <button type="submit" class="btn btn-success w-100 mt-3">Obida Qo'shish</button>
+    <div class="d-flex justify-content-end mt-2">
+        <a href="/Admin/Index" class="btn btn-outline-secondary">🔙 Bekor qilish</a>
+    </div>
+
+</form>

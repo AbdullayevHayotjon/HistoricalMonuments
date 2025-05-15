@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Kirish";
+}
+
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">Tizimga kirish</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    <form method="post" action="/Login/Login">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" name="Email" class="form-control" required value="@ViewBag.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label for="loginPassword" class="form-label">Parol:</label>
+            <div class="input-group">
+                <input type="password" name="Password" id="loginPassword" class="form-control" required />
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('loginPassword', 'toggleIcon_loginPassword')">
+                    <i class="fa-solid fa-eye-slash" id="toggleIcon_loginPassword"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mb-2">🔐 Kirish</button>
+        <div class="d-flex justify-content-end mt-2">
+            <a href="/" class="btn btn-outline-secondary">🔙 Orqaga</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+}

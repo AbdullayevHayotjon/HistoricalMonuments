@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Obidalar.Data;
 using Obidalar.Models;
@@ -40,45 +41,104 @@ namespace Obidalar.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var obida = await _context.Obidalar
-                .Include(o => o.Sharhlar.OrderByDescending(s => s.Sana)) // Sharhlar sanasi bo‘yicha kamayish tartibida
+                .Include(o => o.Sharhlar)  // Sharhlarni qo'shish
+                .Include(o => o.Medialar)  // Medialarni qo'shish (rasmlar/video)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (obida == null)
-                return NotFound();
+            {
+                return NotFound(); // Agar obida topilmasa
+            }
 
-            return View(obida);
+            var model = new ObidaViewModelDetails
+            {
+                Id = obida.Id,
+                Nomi = obida.Nomi,
+                Viloyat = obida.Viloyat,
+                Yil = obida.Yil,
+                ViewCount = obida.ViewCount,
+                Rating = obida.Rating,
+                CreatedAt = obida.CreatedAt,
+                Tavsif = obida.Tavsif,
+                Sharhlar = obida.Sharhlar,
+                Medialar = obida.Medialar
+            };
+
+            return View(model);  // Modelni view-ga uzatish
         }
 
 
+
+        [HttpGet]
         public IActionResult Create()
         {
-            if (HttpContext.Session.GetString("IsAdmin") != "true")
-                return RedirectToAction("Index", "Login");
-
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Obida obida, IFormFile Rasm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ObidaCreateViewModel model)
         {
-            if (HttpContext.Session.GetString("IsAdmin") != "true")
-                return RedirectToAction("Index", "Login");
-
-            if (Rasm != null)
+            if (ModelState.IsValid)
             {
-                var fileName = Path.GetFileName(Rasm.FileName);
-                var filePath = Path.Combine(_env.WebRootPath, "rasmlar", fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                // 1. Obida ma’lumotlarini yaratish
+                var obida = new Obida
                 {
-                    await Rasm.CopyToAsync(stream);
+                    Nomi = model.Nomi,
+                    Viloyat = model.Viloyat,
+                    Yil = model.YaratilganYil,
+                    Tavsif = model.Tavsif,
+                    XaritaUrl = model.XaritaUrl
+                };
+
+                // 2. Obidani DB ga saqlash
+                _context.Obidalar.Add(obida);
+                await _context.SaveChangesAsync();
+
+                // 3. Fayllarni yuklash va saqlash (agar mavjud bo‘lsa)
+                if (model.Medialar != null && model.Medialar.Count > 0)
+                {
+                    var mediaFolder = Path.Combine(_env.WebRootPath, "media");
+                    if (!Directory.Exists(mediaFolder))
+                        Directory.CreateDirectory(mediaFolder);
+
+                    foreach (var mediaFile in model.Medialar)
+                    {
+                        if (mediaFile.Length > 0)
+                        {
+                            // Fayl nomini unikal qilish
+                            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(mediaFile.FileName);
+                            var filePath = Path.Combine(mediaFolder, uniqueFileName);
+
+                            // Faylni serverga saqlash
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await mediaFile.CopyToAsync(stream);
+                            }
+
+                            // DB ga media yozuvini qo‘shish
+                            var media = new ObidaMedia
+                            {
+                                MediaUrl = "/media/" + uniqueFileName,
+                                Type = mediaFile.ContentType.Contains("video") ? MediaType.Video : MediaType.Image,
+                                ObidaId = obida.Id
+                            };
+                            _context.ObidaMedialar.Add(media);
+                        }
+                    }
+
+                    // Media fayllarini DB ga saqlash
+                    await _context.SaveChangesAsync();
                 }
-                obida.RasmUrl = "/rasmlar/" + fileName;
+
+                // 4. Muvaffaqiyatli qo‘shilgach, Index sahifasiga qaytish
+                return RedirectToAction("Index", "Admin");
             }
 
-            _context.Add(obida);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Modelda xatolik bo‘lsa, formani yana ko‘rsatish
+            return View(model);
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -106,11 +166,11 @@ namespace Obidalar.Controllers
                 {
                     await Rasm.CopyToAsync(stream);
                 }
-                obida.RasmUrl = "/rasmlar/" + fileName;
+                //obida.RasmUrl = "/rasmlar/" + fileName;
             }
             else
             {
-                obida.RasmUrl = existingObida.RasmUrl; // eski rasmni saqlab qolamiz
+                //obida.RasmUrl = existingObida.RasmUrl; // eski rasmni saqlab qolamiz
             }
 
             _context.Update(obida);
@@ -118,29 +178,22 @@ namespace Obidalar.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if (HttpContext.Session.GetString("IsAdmin") != "true")
-                return RedirectToAction("Index", "Login");
-
             var obida = await _context.Obidalar.FindAsync(id);
-            if (obida == null) return NotFound();
-            return View(obida);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (HttpContext.Session.GetString("IsAdmin") != "true")
-                return RedirectToAction("Index", "Login");
-
-            var obida = await _context.Obidalar.FindAsync(id);
-            if (obida == null) return NotFound();
+            if (obida == null)
+            {
+                return NotFound();
+            }
 
             _context.Obidalar.Remove(obida);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index", "Admin"); 
         }
+
 
         [HttpPost]
         public async Task<IActionResult> SharhYoz(int obidaId, string matn)

@@ -1,0 +1,65 @@
+﻿@model List<Obidalar.Models.ObidaViewModel>
+
+@{
+    ViewData["Title"] = "Obidalar boshqaruvi";
+}
+<br />
+<h2 class="text-center mb-4">🕌 Obidalar boshqaruvi</h2>
+
+<!-- Markazda qidiruv va tugma -->
+<div class="d-flex justify-content-center mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" style="max-width: 900px; width: 100%;">
+        <!-- Qidiruv formasi: hammasi bitta input-group bo‘lib birlashadi -->
+        <form method="get" asp-action="Index" class="flex-grow-1">
+            <div class="input-group shadow-sm">
+                <select class="form-select" name="filterBy" style="max-width: 225px;">
+                    <option value="nom">Nomi bo‘yicha</option>
+                    <option value="viloyat">Viloyat bo‘yicha</option>
+                </select>
+                <input type="text" class="form-control" name="search" placeholder="Qidiruv..." />
+                <button type="submit" class="btn btn-primary px-4">🔍</button>
+            </div>
+        </form>
+
+        <!-- Obida qo‘shish tugmasi -->
+        <a href="@Url.Action("Create", "Obida")" class="btn btn-success">
+            ➕ Obida qo‘shish
+        </a>
+    </div>
+</div>
+
+
+<table class="table table-hover table-bordered text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Nomi</th>
+            <th>Viloyat</th>
+            <th>Yil</th>
+            <th>ViewCount</th>
+            <th>Rating</th>
+            <th>Yaratilgan sana</th>
+            <th>Amallar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var obida in Model)
+        {
+            <tr>
+                <td>@obida.Id</td>
+                <td>@obida.Nomi</td>
+                <td>@obida.Viloyat</td>
+                <td>@obida.Yil</td>
+                <td>@obida.ViewCount</td>
+                <td>@obida.Rating</td>
+                <td>@obida.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td>
+                    <!-- Batafsil tugmasi -->
+                    <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="btn btn-info">
+                        📖 Batafsil
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

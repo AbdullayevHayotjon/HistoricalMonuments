@@ -10,6 +10,8 @@ namespace Obidalar.Data
 
         public DbSet<Obida> Obidalar { get; set; }
         public DbSet<Sharh> Sharhlar { get; set; }
+        public DbSet<User> Userlar { get; set; }
+        public DbSet<ObidaMedia> ObidaMedialar { get; set; }
     }
 
 }
