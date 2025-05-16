@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Obidalar.Models.Obida>
+
+<!-- Qidiruv formasi -->
+<br />
+<br />
+<form method="get" asp-action="AllObida" class="mb-5">
+    <div class="input-group shadow-sm mx-auto" style="max-width: 700px;">
+        <select class="form-select" name="filterBy" style="max-width: 225px;">
+            <option value="nom">Nomi bo‘yicha</option>
+            <option value="joylashuv">Joylashuvi bo‘yicha</option>
+        </select>
+        <input type="text" class="form-control" name="search" placeholder="Qidiruv..." />
+        <button type="submit" class="btn btn-primary px-4">🔍</button>
+    </div>
+</form>
+
+<!-- Barcha obidalar -->
+<div class="mb-5">
+    <h2 class="custom-heading mb-4">Barcha obidalar</h2>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        @foreach (var obida in Model.OrderByDescending(o => o.CreatedAt))
+        {
+            <div class="col">
+                <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
+                    <div class="card card-obida h-100 shadow-sm" style="cursor: pointer; position: relative;">
+                        <!-- Yurakcha tugmasi -->
+                        <button class="like-btn" onclick="toggleLike(event, this)" style="position: absolute; top: 10px; right: 10px; z-index: 1;">
+                            <i class="fas fa-heart"></i>
+                        </button>
+
+                        <!-- Ko‘zcha va ko‘rish soni -->
+                        <div class="view-count" style="position: absolute; bottom: 10px; right: 10px; font-size: 14px; color: #555;">
+                            <i class="fas fa-eye me-1"></i>@obida.ViewCount
+                        </div>
+
+                        <!-- Reyting (bitta yulduzcha va o'rtacha baho) -->
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>@obida.Rating</span>
+                        </div>
+
+                        <img src="@(obida.Medialar.FirstOrDefault(m => m.Type == MediaType.Image)?.MediaUrl ?? "~/rasmlar/default.png")"
+                             class="card-img-top"
+                             style="height: 180px; object-fit: cover;" 
+                             alt="@obida.Nomi" />
+
+                        <div class="card-body">
+                            <h5 class="card-title">@obida.Nomi</h5>
+                            <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+<div class="mt-4">
+    <a href="@Url.Action("Index", "Obida")" class="btn btn-secondary">🔙 Orqaga</a>
+</div>

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Obidalar.Data;
@@ -30,20 +32,44 @@ namespace Obidalar.Controllers
 
             // Asinxron ishlash uchun ToListAsync() metodidan foydalanamiz
             var result = await obidalar
-    .Include(o => o.Sharhlar.OrderByDescending(s => s.Sana)) // Sharhlarni Sana bo'yicha saralash
-    .ToListAsync();
-
+                .Include(o => o.Medialar) // <<< Medialarni include qilish
+                .Include(o => o.Sharhlar.OrderByDescending(s => s.Sana)) // Sharhlarni tartiblash
+                .ToListAsync();
 
             return View(result);
+        }
+
+        public async Task<IActionResult> AllObida(string filterBy, string search)
+        {
+            var obidalar = _context.Obidalar
+                .Include(o => o.Medialar)   
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                if (filterBy == "joylashuv")
+                    obidalar = obidalar.Where(o => o.Viloyat.Contains(search));
+                else
+                    obidalar = obidalar.Where(o => o.Nomi.Contains(search));
+            }
+
+            return View(obidalar.ToList());
         }
 
 
         public async Task<IActionResult> Details(int id)
         {
+
+
             var obida = await _context.Obidalar
-                .Include(o => o.Sharhlar)  // Sharhlarni qo'shish
-                .Include(o => o.Medialar)  // Medialarni qo'shish (rasmlar/video)
+                .Include(o => o.Sharhlar)
+                    .ThenInclude(s => s.User) // Sharh ichidagi User'ni yuklaymiz
+                .Include(o => o.Medialar)
                 .FirstOrDefaultAsync(o => o.Id == id);
+
+            obida.ViewCount += 1; // Har safar ko'rilganda view countni oshiramiz   
+
+            await _context.SaveChangesAsync(); // O'zgarishlarni saqlaymiz
 
             if (obida == null)
             {
@@ -58,6 +84,7 @@ namespace Obidalar.Controllers
                 Yil = obida.Yil,
                 ViewCount = obida.ViewCount,
                 Rating = obida.Rating,
+                XaritaURL = obida.XaritaUrl,
                 CreatedAt = obida.CreatedAt,
                 Tavsif = obida.Tavsif,
                 Sharhlar = obida.Sharhlar,
@@ -88,7 +115,8 @@ namespace Obidalar.Controllers
                     Viloyat = model.Viloyat,
                     Yil = model.YaratilganYil,
                     Tavsif = model.Tavsif,
-                    XaritaUrl = model.XaritaUrl
+                    XaritaUrl = model.XaritaUrl,
+                    Rating = 5
                 };
 
                 // 2. Obidani DB ga saqlash
@@ -191,26 +219,35 @@ namespace Obidalar.Controllers
             _context.Obidalar.Remove(obida);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Admin"); 
+            return RedirectToAction("Index", "Admin");
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> SharhYoz(int obidaId, string matn)
+        public async Task<IActionResult> SharhYozish(int ObidaId, string UserId, string Matn, int Rating)
         {
-            if (!string.IsNullOrWhiteSpace(matn))
+            if (string.IsNullOrWhiteSpace(Matn))
             {
-                var sharh = new Sharh
-                {
-                    ObidaId = obidaId,
-                    Matn = matn,
-                    Sana = DateTime.UtcNow
-                };
-                _context.Sharhlar.Add(sharh);
-                await _context.SaveChangesAsync();
+                TempData["Xabar"] = "Sharh bo‘sh bo‘lmasligi kerak.";
+                return RedirectToAction("Details", new { id = ObidaId });
             }
+            var obida = await _context.Obidalar.FirstOrDefaultAsync(m => m.Id == ObidaId);
+            if (Rating != 0)
+                obida.Rating = (obida.Rating + Rating) / 2;
 
-            return RedirectToAction("Details", new { id = obidaId });
+            var sharh = new Sharh
+            {
+                ObidaId = ObidaId,
+                UserId = int.Parse(UserId),
+                Matn = Matn,
+                Sana = DateTime.UtcNow
+            };
+
+            _context.Sharhlar.Add(sharh);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = ObidaId });
         }
+
     }
 }

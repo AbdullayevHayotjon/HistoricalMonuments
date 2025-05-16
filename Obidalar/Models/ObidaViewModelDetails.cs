@@ -8,6 +8,7 @@
         public int Yil { get; set; }
         public int ViewCount { get; set; }
         public double Rating { get; set; }
+        public string XaritaURL { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Tavsif { get; set; }
         public List<Sharh> Sharhlar { get; set; }

@@ -31,11 +31,11 @@
     <div class="mb-5" id="newObida">
         <br />
         <br />
-        <h2 class="custom-heading">Yangi obidalar</h2>
+        <h2 class="custom-heading">Yangi qo'shilgan obidalar</h2>
 
         <!-- Gorizontal scroll container -->
         <div class="scroll-container d-flex gap-3 overflow-auto py-3">
-            @foreach (var obida in Model.OrderByDescending(o => o.Yil).Take(10))
+            @foreach (var obida in Model.OrderByDescending(o => o.CreatedAt).Take(5))
             {
                 <div class="flex-shrink-0" style="width: 300px; position: relative;">
                     <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
@@ -47,14 +47,16 @@
                             <!-- Ko'zcha belgisi va ViewCount -->
                             <div class="view-count" style="position: absolute; bottom: 10px; right: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #555;">
                                 <i class="fas fa-eye" style="margin-right: 5px;"></i>
-                                <span class="view-count-number" style="font-size: 14px;">13</span>
+                                <span class="view-count-number" style="font-size: 14px;">@obida.ViewCount</span>
                             </div>
                             <!-- Reyting (bitta yulduzcha va o'rtacha baho) -->
                             <div class="rating">
                                 <i class="fas fa-star"></i>
-                                <span>4.95</span>
+                                <span>@obida.Rating</span>
                             </div>
-                            <img src="~/rasmlar/IchanQala.png" alt="@obida.Nomi" class="card-img-top" />
+                            <img src="@(obida.Medialar.FirstOrDefault(m => m.Type == MediaType.Image)?.MediaUrl ?? "~/rasmlar/default.png")"
+                                 alt="@obida.Nomi"
+                                 class="card-img-top" />
                             <div class="card-body">
                                 <h5 class="card-title">@obida.Nomi</h5>
                                 <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
@@ -71,7 +73,7 @@
     <div class="mb-5" id="topRated">
         <h2 class="custom-heading">Eng ommabop obidalar</h2>
         <div class="scroll-container d-flex gap-3 overflow-auto py-3">
-            @foreach (var obida in Model.Take(5))
+            @foreach (var obida in Model.OrderByDescending(o => o.Rating).Take(5))
             {
                 <div class="flex-shrink-0" style="width: 300px; position: relative;">
                     <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
@@ -83,9 +85,17 @@
                             <!-- Ko'zcha belgisi va ViewCount -->
                             <div class="view-count" style="position: absolute; bottom: 10px; right: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #555;">
                                 <i class="fas fa-eye" style="margin-right: 5px;"></i>
-                                <span class="view-count-number" style="font-size: 14px;">24</span>
+                                <span class="view-count-number" style="font-size: 14px;">@obida.ViewCount</span>
                             </div>
-                            <img src="~/rasmlar/Labihovuz.png" alt="@obida.Nomi" class="card-img-top" />
+                            <!-- Reyting (bitta yulduzcha va o'rtacha baho) -->
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <span>@obida.Rating</span>
+                            </div>
+                            <img src="@(obida.Medialar.FirstOrDefault(m => m.Type == MediaType.Image)?.MediaUrl ?? "~/rasmlar/default.png")"
+                                 alt="@obida.Nomi"
+                                 class="card-img-top" />
+
                             <div class="card-body">
                                 <h5 class="card-title">@obida.Nomi</h5>
                                 <p class="card-text text-muted">@obida.Viloyat - @obida.Yil</p>
@@ -110,14 +120,14 @@
                 </p>
             </div>
             <div class="col-md-6 text-center">
-                <img src="/rasmlar/Registon.png" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
+                <img src="/rasmlar/about2.jpg" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
             </div>
         </div>
 
         <!-- Ikkinchi qism: Chapda rasm, o'ngda matn -->
         <div class="row align-items-center">
             <div class="col-md-6 text-center">
-                <img src="/rasmlar/BahouddinNaqshband.jpg" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
+                <img src="/rasmlar/about1.jpg" alt="Obida rasmi" class="img-fluid rounded shadow" style="max-height: 300px; object-fit: cover;">
             </div>
             <div class="col-md-6">
                 <p style="font-size: 1.1rem; line-height: 1.8;">
