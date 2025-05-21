@@ -1,0 +1,71 @@
+﻿@model Obidalar.Models.User // Foydalanuvchi modelingizni shu yerda yozing
+
+@{
+    ViewData["Title"] = "Sozlamalar";
+}
+
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">🛠 Sozlamalar</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form method="post" action="/Login/UpdateProfile">
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label for="Ism" class="form-label">Ism:</label>
+            <input type="text" name="Ism" class="form-control" required value="@Model.Ism" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email:</label>
+            <input type="email" name="Email" class="form-control" required value="@Model.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label">Yangi parol:</label>
+            <div class="input-group">
+                <input type="password" name="Password" id="Password" class="form-control" required value="@Model.Parol"/>
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('Password', 'toggleIconPassword')">
+                    <i class="fa-solid fa-eye-slash" id="toggleIconPassword"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">💾 Saqlash</button>
+        @{
+            var role = Context.Session.GetString("UserRole");
+            var redirectUrl = role == "Admin" ? Url.Action("Index", "Admin") : Url.Action("Index", "Obida");
+        }
+        <div class="d-flex justify-content-end mt-2">
+            <a href="@redirectUrl" class="btn btn-outline-secondary">🔙 Bosh sahifa</a>
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+}

@@ -1,6 +1,6 @@
 ﻿@{
     var path = Context.Request.Path.ToString().ToLower();
-    bool isAuthPage = path.Contains("/login/register") || path.Contains("/login/login") || path.Contains("/obida/create");
+    bool isAuthPage = path.Contains("/login/register") || path.Contains("/login/login") || path.Contains("/obida/create") || path.Contains("/login/sozlamalar");
 }
 <!DOCTYPE html>
 <html lang="uz">
@@ -147,7 +147,7 @@
                                 }
                                 @if (userRole == "User" || userRole == "Admin")
                                 {
-                                    <li><a class="dropdown-item" href="@Url.Action("Settings", "User")">⚙️ Sozlamalar</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Sozlamalar", "Login")">⚙️ Sozlamalar</a></li>
                                     <li><a class="dropdown-item text-danger" href="@Url.Action("Logout", "Login")">🚪 Chiqish</a></li>
                                 }
                                 else

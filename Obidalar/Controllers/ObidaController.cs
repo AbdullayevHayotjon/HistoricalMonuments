@@ -16,42 +16,65 @@ namespace Obidalar.Controllers
             _env = env;
         }
 
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string search, string filterBy)
         {
             var obidalar = _context.Obidalar.AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
-                obidalar = obidalar
-                    .Where(o => o.Nomi.ToLower().Contains(search.ToLower()));
+                search = search.ToLower();
+
+                if (filterBy == "joylashuv")
+                {
+                    obidalar = obidalar
+                        .Where(o => o.Viloyat.ToLower().Contains(search));
+                }
+                else // Default: nom
+                {
+                    obidalar = obidalar
+                        .Where(o => o.Nomi.ToLower().Contains(search));
+                }
+
                 ViewBag.SearchQuery = search;
+                ViewBag.FilterBy = filterBy;
             }
 
-            // Asinxron ishlash uchun ToListAsync() metodidan foydalanamiz
             var result = await obidalar
-                .Include(o => o.Medialar) // <<< Medialarni include qilish
-                .Include(o => o.Sharhlar.OrderByDescending(s => s.Sana)) // Sharhlarni tartiblash
+                .Include(o => o.Medialar)
+                .Include(o => o.Sharhlar.OrderByDescending(s => s.Sana))
                 .ToListAsync();
 
             return View(result);
         }
 
+
         public async Task<IActionResult> AllObida(string filterBy, string search)
         {
             var obidalar = _context.Obidalar
-                .Include(o => o.Medialar)   
+                .Include(o => o.Medialar)
                 .AsQueryable();
+
+            ViewBag.SearchQuery = search;
+            ViewBag.FilterBy = filterBy;
 
             if (!string.IsNullOrEmpty(search))
             {
+                search = search.ToLower(); // Kichik harfga o'tkazamiz
+
                 if (filterBy == "joylashuv")
-                    obidalar = obidalar.Where(o => o.Viloyat.Contains(search));
-                else
-                    obidalar = obidalar.Where(o => o.Nomi.Contains(search));
+                {
+                    obidalar = obidalar.Where(o => o.Viloyat.ToLower().Contains(search));
+                }
+                else // default: "nom"
+                {
+                    obidalar = obidalar.Where(o => o.Nomi.ToLower().Contains(search));
+                }
             }
 
-            return View(obidalar.ToList());
+
+            return View(await obidalar.ToListAsync()); // Asinxron
         }
+
 
 
         public async Task<IActionResult> Details(int id)

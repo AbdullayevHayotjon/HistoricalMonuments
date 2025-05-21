@@ -7,7 +7,7 @@
 <h2 class="text-center mb-4">🕌 Obidalar boshqaruvi</h2>
 
 <!-- Markazda qidiruv va tugma -->
-<div class="d-flex justify-content-center mb-4">
+<div class="d-flex justify-content-center mb-4"> 
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3" style="max-width: 900px; width: 100%;">
         <!-- Qidiruv formasi: hammasi bitta input-group bo‘lib birlashadi -->
         <form method="get" asp-action="Index" class="flex-grow-1">
@@ -43,10 +43,14 @@
         </tr>
     </thead>
     <tbody>
+        @{
+            int tartibRaqam = 1;
+        }
+
         @foreach (var obida in Model)
         {
             <tr>
-                <td>@obida.Id</td>
+                <td>@tartibRaqam</td>
                 <td>@obida.Nomi</td>
                 <td>@obida.Viloyat</td>
                 <td>@obida.Yil</td>
@@ -54,12 +58,14 @@
                 <td>@obida.Rating</td>
                 <td>@obida.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</td>
                 <td>
-                    <!-- Batafsil tugmasi -->
                     <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="btn btn-info">
                         📖 Batafsil
                     </a>
                 </td>
             </tr>
+
+            tartibRaqam++;
         }
+
     </tbody>
 </table>

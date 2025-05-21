@@ -6,13 +6,15 @@
 <form method="get" asp-action="AllObida" class="mb-5">
     <div class="input-group shadow-sm mx-auto" style="max-width: 700px;">
         <select class="form-select" name="filterBy" style="max-width: 225px;">
-            <option value="nom">Nomi bo‘yicha</option>
-            <option value="joylashuv">Joylashuvi bo‘yicha</option>
+            <option value="nom" selected="@(ViewBag.FilterBy == "nom" ? "selected" : null)">Nomi bo‘yicha</option>
+            <option value="joylashuv" selected="@(ViewBag.FilterBy == "joylashuv" ? "selected" : null)">Joylashuvi bo‘yicha</option>
         </select>
-        <input type="text" class="form-control" name="search" placeholder="Qidiruv..." />
+        <input type="text" class="form-control" name="search" placeholder="Qidiruv..." value="@ViewBag.SearchQuery" />
         <button type="submit" class="btn btn-primary px-4">🔍</button>
     </div>
 </form>
+
+
 
 <!-- Barcha obidalar -->
 <div class="mb-5">

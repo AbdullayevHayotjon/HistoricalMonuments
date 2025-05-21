@@ -49,43 +49,102 @@ namespace Obidalar.Controllers
             return RedirectToAction("Index", "Obida");
         }
 
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(string Email, string Password)
-        {
-            var user = await _context.Userlar
-                .FirstOrDefaultAsync(u => u.Email == Email.Trim().ToLower() && u.Parol == Password);
-
-            if (user == null)
+            [HttpGet]
+            public IActionResult Login()
             {
-                ViewBag.Error = "Email yoki parol noto‘g‘ri!";
-                ViewBag.Email = Email; // Emailni saqlab qoldik
-                return View(); // Login.cshtml sahifasini xatolik bilan ko‘rsatadi
+                return View();
             }
 
-            // Sessiyaga ma'lumotlarni saqlaymiz (tartibli holda)
-            HttpContext.Session.SetString("UserId", user.Id.ToString());
-            HttpContext.Session.SetString("UserName", user.Ism); // Ism saqlanadi
-            HttpContext.Session.SetString("UserEmail", user.Email); // Email saqlanadi
-            HttpContext.Session.SetString("UserRole", user.Role.ToString()); // Foydalanuvchi rolini string sifatida saqlaymiz
-
-            if(user.Role == UserRole.Admin)
+            [HttpPost]
+            public async Task<IActionResult> Login(string Email, string Password)
             {
-                return RedirectToAction("Index", "Admin");
+                var user = await _context.Userlar
+                    .FirstOrDefaultAsync(u => u.Email == Email.Trim().ToLower() && u.Parol == Password);
+
+                if (user == null)
+                {
+                    ViewBag.Error = "Email yoki parol noto‘g‘ri!";
+                    ViewBag.Email = Email; // Emailni saqlab qoldik
+                    return View(); // Login.cshtml sahifasini xatolik bilan ko‘rsatadi
+                }
+
+                // Sessiyaga ma'lumotlarni saqlaymiz (tartibli holda)
+                HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Session.SetString("UserName", user.Ism); // Ism saqlanadi
+                HttpContext.Session.SetString("UserEmail", user.Email); // Email saqlanadi
+                HttpContext.Session.SetString("UserRole", user.Role.ToString()); // Foydalanuvchi rolini string sifatida saqlaymiz
+
+                if(user.Role == UserRole.Admin)
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                return RedirectToAction("Index", "Obida");
             }
-            return RedirectToAction("Index", "Obida");
-        }
 
         [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Obida");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Sozlamalar()
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userIdStr))
+            {
+                // Sessiya yo‘q, foydalanuvchi login qilmagan
+                TempData["Error"] = "Iltimos, tizimga kiring!";
+                return RedirectToAction("Login", "Login");
+            }
+
+            int userId = int.Parse(userIdStr);
+
+            var user = await _context.Userlar.FindAsync(userId);
+            if (user == null)
+            {
+                TempData["Error"] = "Foydalanuvchi topilmadi.";
+                return RedirectToAction("Login", "Login");
+            }
+
+            return View(user); // Sozlamalar.cshtml ga user model jo‘natiladi
+        }
+
+
+        [HttpPost]
+        public IActionResult UpdateProfile(int Id, string Ism, string Email, string Password)
+        {
+            var user = _context.Userlar.FirstOrDefault(u => u.Id == Id);
+            if (user == null)
+            {
+                TempData["Error"] = "Foydalanuvchi topilmadi.";
+                return RedirectToAction("Sozlamalar");
+            }
+
+            // Emailni boshqa foydalanuvchi ishlatmaganini tekshirish (agar kerak bo‘lsa)
+            if (_context.Userlar.Any(u => u.Email == Email && u.Id != Id))
+            {
+                TempData["Error"] = "Bu email boshqa foydalanuvchi tomonidan ishlatilgan.";
+                return RedirectToAction("Sozlamalar");
+            }
+
+            user.Ism = Ism;
+            user.Email = Email;
+
+            if (!string.IsNullOrWhiteSpace(Password))
+            {
+                // E'tibor: Parolni xesh bilan saqlash tavsiya etiladi
+                user.Parol = Password;
+            }
+
+            HttpContext.Session.SetString("UserName", user.Ism); // Ism saqlanadi
+
+            _context.SaveChanges();
+            TempData["Success"] = "Ma'lumotlar muvaffaqiyatli yangilandi.";
+
+            return RedirectToAction("Sozlamalar");
         }
 
     }

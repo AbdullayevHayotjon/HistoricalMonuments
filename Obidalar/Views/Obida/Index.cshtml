@@ -12,9 +12,10 @@
                 <div class="input-group shadow-sm mx-auto" style="max-width: 700px;">
                     <!-- Select qismini kichik qilish uchun max-width qo‘yamiz -->
                     <select class="form-select" name="filterBy" style="max-width: 225px;">
-                        <option value="nom">Nomi bo‘yicha</option>
-                        <option value="joylashuv">Joylashuvi bo‘yicha</option>
+                        <option value="nom" selected="@(ViewBag.FilterBy == "nom" ? "selected" : null)">Nomi bo‘yicha</option>
+                        <option value="joylashuvca" selected="@(ViewBag.FilterBy == "joylashuv" ? "selected" : null)">Joylashuvi bo‘yicha</option>
                     </select>
+
 
                     <!-- Qidiruv inputi (keng qoladi) -->
                     <input type="text" class="form-control" name="search" placeholder="Qidiruv..." />
@@ -73,7 +74,7 @@
     <div class="mb-5" id="topRated">
         <h2 class="custom-heading">Eng ommabop obidalar</h2>
         <div class="scroll-container d-flex gap-3 overflow-auto py-3">
-            @foreach (var obida in Model.OrderByDescending(o => o.Rating).Take(5))
+            @foreach (var obida in Model.OrderByDescending(o => o.Rating).ThenByDescending(o => o.ViewCount).Take(5))
             {
                 <div class="flex-shrink-0" style="width: 300px; position: relative;">
                     <a href="@Url.Action("Details", "Obida", new { id = obida.Id })" class="text-decoration-none text-dark">
